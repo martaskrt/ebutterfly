@@ -1,9 +1,7 @@
-######################## TRAINING IMAGE MODEL ################################
+## TRAINING IMAGE MODEL ##
 
 
-
-
-######################## TRAINING GEO MODEL ##################################
+## TRAINING GEO MODEL ##
 
 cd geo_prior/geo_prior
 python3 train_geo_net.py --config_file config_iNat.json --output geo_model --epochs 100 --early_stop_patience 20 --date --train_full
@@ -15,7 +13,7 @@ python3 train_geo_net.py --config_file config_iNat.json --output geo_model --epo
 --> date: include dates
 --> train_full: include eButterfly location observations that don't have images
 
-######################## TESTING IMAGE + GEO MODELS ##########################
+## TESTING IMAGE + GEO MODELS ##
 
 cd geo_prior/geo_prior
 python3 test_geo_prior.py --resume_dir img_model_dir --logfile test --geo_model geo_model.pth.tar --date
