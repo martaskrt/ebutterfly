@@ -1,0 +1,60 @@
+{
+    "model": {
+        "name": "resnet",
+        "pretrained": true,
+        "num_classes": 834,
+        "depth": 50
+    },
+    "optimizer": {
+        "learning_rate": 4,
+        "weight_decay": 5,
+        "lr_scheduler": {
+            "step_size": 15,
+            "gamma": 0.1
+        }
+    },
+    "dataset": {
+        "name": "butterfly",
+        "csv_root": "/home/zach/marta/myproject/geo_prior/geo_prior",
+        "image_dir": "/home/zach/marta/data/ob_with_images/",
+        "train_info_file": "carib_dataset.csv",
+        "test_info_file": "carib_dataset.csv",
+        "fine_grained_level": "Species",
+        "preprocessing": {
+            "normalization": {
+                "resize": {
+                    "scale": [
+                        400,
+                        400
+                    ],
+                    "keep_ratio": true
+                }
+            },
+            "augmentation": {
+                "random_rotation": {
+                    "angle": 15
+                },
+                "random_crop": {
+                    "proportion": 0.8
+                },
+                "random_flip": {
+                    "probability": 0.5
+                }
+            }
+        },
+        "num_workers": 20
+    },
+    "training": {
+        "batch_size": 64,
+        "epochs": 90,
+        "class_weights_alpha": 0.5,
+        "loss": {
+            "type": "classification_only"
+        },
+        "hard_negative_mining": false
+    },
+    "runtime": {
+        "num_workers": 20,
+        "SEED": 2997653444
+    }
+}
