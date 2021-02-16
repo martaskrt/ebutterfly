@@ -1,5 +1,14 @@
 ## TRAINING IMAGE MODEL ##
 
+cd utils
+
+python3 train.py --config_file config_carib.json --logdir 2021_img_carib --upsample
+
+--> config_file: hyperparamters for model training and path to data files
+
+--> logdir: where to save model
+
+--> upsample: upsample images for species below threshold
 
 ## TRAINING GEO MODEL ##
 
