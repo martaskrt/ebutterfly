@@ -1,0 +1,53 @@
+{
+    "model": {
+        "name": "resnet",
+        "pretrained": true,
+        "num_classes": 629,
+        "depth": 50,        
+        "finetune_from": "pretrained_models/genus/resnet50/best",
+        "finetune_from_best": "top3_acc"
+    },
+    "optimizer": {
+        "learning_rate": 4.5,
+        "weight_decay": 5,
+        "lr_scheduler": {
+            "step_size": 5,
+            "gamma": 0.3
+        }
+    },
+    "dataset": {
+        "name": "butterfly",
+        "csv_root": "data/all_images_split_Species",
+        "image_dir": "data/ob_with_images/",
+        "train_info_file": "train_annotations.csv",
+        "test_info_file": "test_annotations.csv",
+        "fine_grained_level": "Species",
+        "preprocessing": {
+            "normalization": {
+                "resize": {
+                    "scale": [
+                        400,
+                        400
+                    ],
+                    "keep_ratio": true
+                }
+            },
+            "augmentation": {
+                "random_rotation": {
+                    "angle": 15
+                },
+                "random_crop": {
+                    "proportion": 0.8
+                },
+                "random_flip": {
+                    "probability": 0.5
+                }
+            }
+        }
+    },
+    "training": {
+        "batch_size": 32,
+        "epochs": 50,
+        "class_weights_alpha": 0.5
+    }
+}

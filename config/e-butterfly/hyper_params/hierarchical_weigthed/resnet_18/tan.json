@@ -1,0 +1,73 @@
+{
+    "model": {
+        "name": "resnet",
+        "pretrained": true,
+        "num_classes": 629,
+        "depth": 18,
+        "dropout": 0.5
+    },
+    "optimizer": {
+        "learning_rate": 5,
+        "weight_decay": 4,
+        "lr_scheduler": {
+            "step_size": 10,
+            "gamma": 0.1
+        }
+    },
+    "dataset": {
+        "name": "butterfly",
+        "csv_root": "data/all_images_split_Species",
+        "image_dir": "data/ob_with_images/",
+        "train_info_file": "train_annotations.csv",
+        "test_info_file": "test_annotations.csv",
+        "fine_grained_level": "Species",
+        "preprocessing": {
+            "normalization": {
+                "resize": {
+                    "scale": [
+                        400,
+                        400
+                    ],
+                    "keep_ratio": true
+                }
+            },
+            "augmentation": {
+                "random_rotation": {
+                    "angle": 15
+                },
+                "random_crop": {
+                    "proportion": 0.8
+                },
+                "random_flip": {
+                    "probability": 0.5
+                }
+            }
+        }
+    },
+    "training": {
+        "batch_size": 64,
+        "epochs": 40,
+        "class_weights_alpha": 0.5,
+        "loss": {
+            "type": "hierarchical",
+            "params": {
+                "tan": {
+                    "clip_min_params": {
+                        "min_value": 0.2,
+                        "alpha": 0.1
+                    },
+                    "clip_max_params": {
+                        "max_value": 0.96,
+                        "alpha": 0.5
+                    }
+                },
+                "weights": {
+                    "k_factor": 1,
+                    "Family": 3,
+                    "Genus": 2,
+                    "Species": 1
+                }
+            }
+        }
+    }
+}
