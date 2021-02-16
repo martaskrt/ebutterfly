@@ -238,13 +238,10 @@ def main():
         train_data.samples = train_data.samples[train_data.samples.Latitude.notnull()]
         
         train_locs = train_data.samples[["Longitude", "Latitude", "Elevation"]].values.astype(np.float32)
-        #train_imgs = train_data.samples['Satellite_imgs'].values
         val_locs = val_data.samples[["Longitude", "Latitude", "Elevation"]].values.astype(np.float32)
-        #val_imgs = val_data.samples['Satellite_imgs'].values
         test_locs = test_data.samples[["Longitude", "Latitude", "Elevation"]].values.astype(np.float32)
         test_classes = test_data.samples['label'].values
         test_dates = np.array(list(map(lambda x: transform_date(x), test_data.samples['Date Observed'].values)))
-        #test_imgs = test_data.samples['Satellite_imgs'].values
         test_users= None
     train_classes = train_data.samples['label'].values
     val_classes = val_data.samples['label'].values
@@ -256,68 +253,56 @@ def main():
     if args.train_full:
         print("TRAIN DATA:::{}".format(len(train_locs)))
         print("VAL DATA:::{}".format(len(val_locs)))
-        #train_data_path, val_data_path, test_data_path = train_data.samples['path'].values, val_data.samples['path'].values, test_data.samples['path'].values
-        #df = pd.read_csv("all_records_w_imgs.csv")
-        df = pd.read_csv("gbif_obs.csv")
-        df = df.dropna(subset = ['Latitude', 'Longitude', 'Date Observed'])
-        df['Elevation'] = -1
+        train_data_path, val_data_path, test_data_path = train_data.samples['path'].values, val_data.samples['path'].values, test_data.samples['path'].values
+        df = pd.read_csv("all_records_w_imgs.csv")
          
-      #  if not args.world_coords:
-       #     df = df[(df.Latitude >= 5) & (df.Latitude <= 75)]
-        #    df = df[(df.Longitude >= -175) & (df.Longitude <= -25)]
-       # path = df['img_2'].values
+        if not args.world_coords:
+            df = df[(df.Latitude >= 5) & (df.Latitude <= 75)]
+            df = df[(df.Longitude >= -175) & (df.Longitude <= -25)]
+        path = df['img_2'].values
         locs = df[["Longitude", "Latitude", "Elevation"]].values.astype(np.float32) # drop these if out of bounds
         species = df[["Genus", "Species"]].values
-        #satellite_imgs = df['Satellite_imgs'].values
-        #classes = ["{} {}".format(item[0], item[1]) for item in species]
-        classes = ["{}".format(item[0]) for item in species]
+        classes = ["{} {}".format(item[0], item[1]) for item in species]
         dates = np.array(list(map(lambda x: transform_date(x), df['Date Observed'].values)))
 
-    #    full_train_locs, full_val_locs, full_test_locs, extra_locs = [], [], [], []
-     #   full_train_classes, full_val_classes, full_test_classes, extra_classes = [], [], [], []
-      #  full_train_dates, full_val_dates, full_test_dates, extra_dates = [], [], [], []
-      #  full_train_imgs, full_val_imgs, full_test_imgs, extra_imgs = [],[],[],[]\
+        full_train_locs, full_val_locs, full_test_locs, extra_locs = [], [], [], []
+        full_train_classes, full_val_classes, full_test_classes, extra_classes = [], [], [], []
+        full_train_dates, full_val_dates, full_test_dates, extra_dates = [], [], [], []
+        full_train_imgs, full_val_imgs, full_test_imgs, extra_imgs = [],[],[],[]\
         train_locs = list(train_locs); train_classes = list(train_classes); train_dates = list(train_dates)
         le = train_data.label_encoder
-        #for i in tqdm(range(len(path))):
         orig_classes = []
         for i in tqdm(range(len(locs))):
             if classes[i] not in le.classes_:
                 print(classes[i])
                 continue
-            try:
-                train_locs.append(locs[i]); orig_classes.append(classes[i]); train_dates.append(dates[i]); 
-            except:
-                continue
-          #  if args.use_imgs:
-           #     if satellite_imgs == "None":
-            #        continue
-          #  if int(locs[i][0]) > 500 or int(locs[i][1]) > 500:
-           #     continue
-            #if path[i] in train_data_path:
-             #   full_train_locs.append(locs[i]); full_train_classes.append(classes[i]); full_train_dates.append(dates[i]); 
-                #full_train_imgs.append(satellite_imgs[i])
-            #elif path[i] in val_data_path:
-             #   full_val_locs.append(locs[i]); full_val_classes.append(classes[i]); full_val_dates.append(dates[i]); 
-                #full_val_imgs.append(satellite_imgs[i])
-          #  elif path[i] in test_data_path:
-           #     full_test_locs.append(locs[i]); full_test_classes.append(classes[i]); full_test_dates.append(dates[i])
-                #full_test_imgs.append(satellite_imgs[i])
-            #else:
-             #   n, p = 1, .9
-              #  s = np.random.binomial(n, p, 1)
-               # if s[0] == 0:
-                #    full_val_locs.append(locs[i]); full_val_classes.append(classes[i]); full_val_dates.append(dates[i]); 
-                    #full_val_imgs.append(dates[i])
-                #elif s[0] == 1:
-                 #   full_train_locs.append(locs[i]); full_train_classes.append(classes[i]); full_train_dates.append(dates[i]); 
-                    #full_train_imgs.append(dates[i])
-        train_classes.extend(le.transform(orig_classes))
-        train_locs = np.array(train_locs); train_classes = np.array(train_classes); train_dates = np.array(train_dates)
-      #  train_locs, val_locs, test_locs = np.array(full_train_locs), np.array(full_val_locs), np.array(full_test_locs)
-       # train_classes, val_classes, test_classes = np.array(le.transform(full_train_classes)), np.array(le.transform(full_val_classes)), np.array(le.transform(full_test_classes))
-        #train_dates, val_dates, test_dates = np.array(full_train_dates), np.array(full_val_dates), np.array(full_test_dates)
-        #train_imgs, val_imgs, test_imgs = np.array(full_train_imgs), np.array(full_val_imgs), np.array(full_test_imgs)
+            if args.use_imgs:
+                if satellite_imgs == "None":
+                    continue
+            if int(locs[i][0]) > 500 or int(locs[i][1]) > 500:
+               continue
+            if path[i] in train_data_path:
+                full_train_locs.append(locs[i]); full_train_classes.append(classes[i]); full_train_dates.append(dates[i]); 
+                full_train_imgs.append(satellite_imgs[i])
+            elif path[i] in val_data_path:
+                full_val_locs.append(locs[i]); full_val_classes.append(classes[i]); full_val_dates.append(dates[i]); 
+                full_val_imgs.append(satellite_imgs[i])
+            elif path[i] in test_data_path:
+                full_test_locs.append(locs[i]); full_test_classes.append(classes[i]); full_test_dates.append(dates[i])
+                full_test_imgs.append(satellite_imgs[i])
+            else:
+                n, p = 1, .9
+                s = np.random.binomial(n, p, 1)
+                if s[0] == 0:
+                    full_val_locs.append(locs[i]); full_val_classes.append(classes[i]); full_val_dates.append(dates[i]); 
+                    full_val_imgs.append(dates[i])
+                elif s[0] == 1:
+                    full_train_locs.append(locs[i]); full_train_classes.append(classes[i]); full_train_dates.append(dates[i]); 
+                    full_train_imgs.append(dates[i])
+        train_locs, val_locs, test_locs = np.array(full_train_locs), np.array(full_val_locs), np.array(full_test_locs)
+        train_classes, val_classes, test_classes = np.array(le.transform(full_train_classes)), np.array(le.transform(full_val_classes)), np.array(le.transform(full_test_classes))
+        train_dates, val_dates, test_dates = np.array(full_train_dates), np.array(full_val_dates), np.array(full_test_dates)
+        train_imgs, val_imgs, test_imgs = np.array(full_train_imgs), np.array(full_val_imgs), np.array(full_test_imgs)
 
     print("TRAIN DATA:::{}".format(len(train_locs)))
     print("VAL DATA:::{}".format(len(val_locs)))
