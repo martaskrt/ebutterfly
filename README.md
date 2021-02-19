@@ -1,20 +1,23 @@
 ## TRAINING IMAGE MODEL ##
 
-cd utils
+To train the picture-based model, do the following:
 
-python3 train.py --config_file config_carib.json --logdir 2021_img_carib --upsample
+```cd utils```
 
---> config_file: hyperparamters for model training and path to data files
+```python3 train.py --config_file config_carib.json --logdir 2021_img_carib --upsample```
+**Important components:
 
---> logdir: where to save model
+--> config_file: hyperparameters for model training and path to data files
+
+--> logdir: where to save the model
 
 --> upsample: upsample images for species below threshold
 
 ## TRAINING GEO MODEL ##
 
-cd geo_prior/geo_prior
+```cd geo_prior/geo_prior```
 
-python3 train_geo_net.py --config_file config_iNat.json --output geo_model --epochs 100 --early_stop_patience 20 --date --train_full
+```python3 train_geo_net.py --config_file config_iNat.json --output geo_model --epochs 100 --early_stop_patience 20 --date --train_full```
 
 --> config_file: same as for image model (mainly used for data organization)
 
@@ -30,9 +33,9 @@ python3 train_geo_net.py --config_file config_iNat.json --output geo_model --epo
 
 ## TESTING IMAGE + GEO MODELS ##
 
-cd geo_prior/geo_prior
+```cd geo_prior/geo_prior```
 
-python3 test_geo_prior.py --resume_dir img_model_dir --logfile test --geo_model geo_model.pth.tar --date
+```python3 test_geo_prior.py --resume_dir img_model_dir --logfile test --geo_model geo_model.pth.tar --date```
 
 --> resume_dir: directory where image model is located
 
