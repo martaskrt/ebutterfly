@@ -91,7 +91,7 @@ def evaluate(config, model, data_loader, loss_object,
                     predictions_per_obs[l] = []
                 predictions_per_obs[l].append(output[i].cpu().detach().numpy())
 
-            count_label[label] += 1
+            #count_label[label] += 1
 
             for k in [3,5,10]:
                 prob_pred_topk, class_pred_topk = torch.topk(output, k, dim=1,
@@ -102,13 +102,13 @@ def evaluate(config, model, data_loader, loss_object,
                     target['label'].view(-1, 1)).sum(dim=-1)
                 is_top_k = np.squeeze(is_top_k.cpu().numpy())
                 if k == 3:
-                    correct_top3[label] += is_top_k
+                    #correct_top3[label] += is_top_k
                     class_pred_top3 = class_pred_topk
                 elif k == 5:
-                    correct_top5[label] += is_top_k
+                    #correct_top5[label] += is_top_k
                     class_pred_top5 = class_pred_topk
                 elif k == 10:
-                    correct_top10[label] += is_top_k
+                    #correct_top10[label] += is_top_k
                     class_pred_top10 = class_pred_topk
             # get the index of the max log-probability
             pred = output.argmax(dim=1, keepdim=True)
@@ -134,7 +134,7 @@ def evaluate(config, model, data_loader, loss_object,
             is_correct = pred.eq(target['label'].view_as(pred))
             is_correct = np.squeeze(is_correct.cpu().numpy())
             
-            correct[label] += is_correct
+            #correct[label] += is_correct
 
         val_loss = validation_loss/len(data_loader)
         top1_acc = np.sum(correct) / np.sum(count_label)
