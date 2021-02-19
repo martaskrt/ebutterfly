@@ -57,18 +57,27 @@ def train_one_epoch(config, model, optimizer, data_loader, loss_object, device,
         
        
         label = target['label'].cpu()
-        count_label[label] += 1
+        #count_label[label] += 1
         prob_pred_top3, class_pred_top3 = torch.topk(output, 3, dim=1,
                                                      largest=True, sorted=True,
                                                      out=None)
         is_top_3 = class_pred_top3.eq(target['label'].view(-1, 1)).sum(dim=-1)
         is_top_3 = np.squeeze(is_top_3.cpu().numpy())
-        correct_top3[label] += is_top_3
+        #correct_top3[label] += is_top_3
         # get the index of the max log-probability
         pred = output.argmax(dim=1, keepdim=True)
+        
+        for i in range(len(label)):
+            curr_label = label[i].item()
+            count_label[curr_label] += 1
+            if pred[i] == curr_label:
+                correct[curr_label] += 1
+            if curr_label in class_pred_top3[i]:
+                correct_top3[curr_label] += 1
+        
         is_correct = pred.eq(target['label'].view_as(pred))
         is_correct = np.squeeze(is_correct.cpu().numpy())
-        correct[label] += is_correct
+        #correct[label] += is_correct
         # the accuracy are first averaged by batch
     top1_epoch_acc = np.sum(correct) / np.sum(count_label)
     top3_epoch_acc = np.sum(correct_top3) / np.sum(count_label)
@@ -119,7 +128,7 @@ def evaluate(config, model, data_loader, loss_object,
             validation_loss += loss.item()
 
             label = target['label'].cpu()
-            count_label[label] += 1
+            #count_label[label] += 1
             prob_pred_top3, class_pred_top3 = torch.topk(output, 3, dim=1,
                                                          largest=True,
                                                          sorted=True,
@@ -127,12 +136,20 @@ def evaluate(config, model, data_loader, loss_object,
             is_top_3 = class_pred_top3.eq(
                 target['label'].view(-1, 1)).sum(dim=-1)
             is_top_3 = np.squeeze(is_top_3.cpu().numpy())
-            correct_top3[label] += is_top_3
+            #correct_top3[label] += is_top_3
             # get the index of the max log-probability
             pred = output.argmax(dim=1, keepdim=True)
+            for i in range(len(label)):
+                curr_label = label[i].item()
+                count_label[curr_label] += 1
+                if pred[i] == curr_label:
+                    correct[curr_label] += 1
+                if curr_label in class_pred_top3[i]:
+                    correct_top3[curr_label] += 1
+                    
             is_correct = pred.eq(target['label'].view_as(pred))
             is_correct = np.squeeze(is_correct.cpu().numpy())
-            correct[label] += is_correct
+            #correct[label] += is_correct
         val_loss = validation_loss/len(data_loader)
         top1_acc = np.sum(correct) / np.sum(count_label)
         top3_acc = np.sum(correct_top3) / np.sum(count_label)
